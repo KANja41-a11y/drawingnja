@@ -1,34 +1,33 @@
-# Drawing App
+# Aura Draw
 
-Aplikasi menggambar berbasis web yang siap di-host di **GitHub Pages**.
+Aplikasi menggambar berbasis web yang aesthetic & siap di-host di **GitHub Pages**.
 
 ## Fitur
 
-- **Kuas (Brush)** & **Penghapus (Eraser)**
-- **Shape tools**: Garis lurus, Kotak, Lingkaran
-- **Color picker** untuk warna kuas
-- **Ganti background** canvas
-- **Ukuran kuas** (1–60)
-- **Opacity / Transparansi** (5%–100%)
-- **Tema Dark / Light**
-- **Undo** (tombol + Ctrl+Z)
-- **Hapus semua**
-- **Unduh** sebagai PNG
-- Support **mouse + touch** (HP/tablet)
+- Kuas (Brush) & Penghapus (Eraser)
+- Shape tools: Garis, Kotak, Lingkaran + **Fill mode**
+- **Text Tool** — klik lalu ketik
+- **Eyedropper** — ambil warna dari canvas
+- **Upload Image** — gambar di atas foto
+- Color picker + ganti background
+- Ukuran kuas & Opacity
+- **Undo / Redo**
+- **Auto-save** ke LocalStorage (progress tidak hilang)
+- Tema Dark / Light yang aesthetic
+- Support mouse + touch (HP)
+- Keyboard shortcuts (B, E, L, R, C, T, I, Ctrl+Z, Ctrl+Y)
 
 ## Cara Deploy ke GitHub Pages
 
-1. Buat repository baru di GitHub (contoh: `drawing-app`)
-2. Upload file `index.html` ke repository
-3. Masuk ke **Settings → Pages**
-4. Source: **Deploy from a branch** → pilih `main` → folder `/ (root)`
-5. Tunggu beberapa detik, lalu buka URL yang muncul  
-   (contoh: `https://username.github.io/drawing-app`)
+1. Buat repository baru di GitHub
+2. Upload `index.html`
+3. Settings → Pages → Deploy from branch `main` → / (root)
+4. Buka URL yang muncul
 
 ## Struktur
 
 ```
 drawing-app/
-├── index.html   ← semua kode ada di sini (single file)
+├── index.html
 └── README.md
 ```

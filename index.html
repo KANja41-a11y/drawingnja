@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aura Draw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0c0f;
+      --bg-elevated: #141418;
+      --panel: #1a1a20;
+      --panel-2: #22222a;
+      --border: #2e2e38;
+      --border-hover: #3f3f4a;
+      --text: #f0f0f5;
+      --text-muted: #8b8b9a;
+      --accent: #a78bfa;
+      --accent-2: #c4b5fd;
+      --accent-soft: rgba(167, 139, 250, 0.15);
+      --success: #34d399;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --font: 'Outfit', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f2f8;
+      --bg-elevated: #ffffff;
+      --panel: #ffffff;
+      --panel-2: #f8f6fc;
+      --border: #e4e0ec;
+      --border-hover: #d0cadc;
+      --text: #1a1625;
+      --text-muted: #6b6580;
+      --accent: #7c3aed;
+      --accent-2: #8b5cf6;
+      --accent-soft: rgba(124, 58, 237, 0.1);
+      --shadow: 0 8px 32px rgba(100, 80, 150, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #a78bfa, #818cf8);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .logo h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .logo span {
+      font-weight: 300;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-left: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--border-hover);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .toolbar {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--panel-2);
+      padding: 5px 7px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .tool-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s ease;
+    }
+
+    .tool-btn:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    [data-theme="light"] .tool-btn:hover {
+      background: rgba(0,0,0,0.04);
+    }
+
+    .tool-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(167, 139, 250, 0.35);
+    }
+
+    .tool-btn.active:hover {
+      background: var(--accent-2);
+      color: #fff;
+    }
+
+    input[type="color"] {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      background: transparent;
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; }
+    input[type="color"]::-webkit-color-swatch {
+      border-radius: 5px;
+      border: 2px solid var(--border);
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 4px;
+    }
+
+    .slider-group label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 72px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--panel);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    .slider-value {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      min-width: 32px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .toggle-btn {
+      height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .toggle-btn.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .action-btn {
+      height: 34px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.18s ease;
+    }
+
+    .action-btn:active { transform: scale(0.96); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--danger);
+      border: 1px solid transparent;
+    }
+    .btn-danger:hover { background: rgba(248, 113, 113, 0.22); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-2); }
+
+    .btn-success {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success);
+    }
+    .btn-success:hover { background: rgba(52, 211, 153, 0.22); }
+
+    .canvas-area {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: 
+        radial-gradient(ellipse at 30% 20%, rgba(167,139,250,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(129,140,248,0.05) 0%, transparent 50%),
+        var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    [data-theme="light"] .canvas-area {
+      background: 
+        radial-gradient(ellipse at 30% 20%, rgba(124,58,237,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(99,102,241,0.04) 0%, transparent 50%),
+        var(--bg);
+    }
+
+    .canvas-frame {
+      position: relative;
+      box-shadow: var(--shadow);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+      touch-action: none;
+      background: #ffffff;
+    }
+
+    .statusbar {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 7px 16px;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      font-family: var(--mono);
+    }
+
+    .statusbar .hint { opacity: 0.7; }
+
+    #fileInput { display: none; }
+
+    .text-input-box {
+      position: absolute;
+      z-index: 20;
+      background: var(--panel);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: var(--font);
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      min-width: 160px;
+      box-shadow: var(--shadow);
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 10px 14px; }
+      .logo h1 { font-size: 1rem; }
+      .toolbar { padding: 8px 10px; gap: 6px; }
+      .tool-group { padding: 4px 5px; }
+      .tool-btn { width: 32px; height: 32px; font-size: 0.95rem; }
+      .action-btn { height: 32px; padding: 0 9px; font-size: 0.78rem; }
+      input[type="range"] { width: 56px; }
+      .slider-group label { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">✨</div>
+      <h1>Aura <span>Draw</span></h1>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeBtn" title="Ganti Tema">🌙</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tool-group">
+      <button class="tool-btn active" id="brushBtn" title="Kuas (B)">🖌️</button>
+      <button class="tool-btn" id="eraserBtn" title="Penghapus (E)">🧽</button>
+      <button class="tool-btn" id="lineBtn" title="Garis (L)">／</button>
+      <button class="tool-btn" id="rectBtn" title="Kotak (R)">▭</button>
+      <button class="tool-btn" id="circleBtn" title="Lingkaran (C)">○</button>
+      <button class="tool-btn" id="textBtn" title="Teks (T)">T</button>
+      <button class="tool-btn" id="eyedropperBtn" title="Eyedropper (I)">💧</button>
+    </div>
+
+    <div class="tool-group">
+      <input type="color" id="colorPicker" value="#1e1b4b" title="Warna Kuas" />
+      <input type="color" id="bgPicker" value="#ffffff" title="Background" />
+    </div>
+
+    <div class="tool-group">
+      <div class="slider-group">
+        <label>Size</label>
+        <input type="range" id="sizeSlider" min="1" max="80" value="6" />
+        <span class="slider-value" id="sizeValue">6</span>
+      </div>
+    </div>
+    <div class="tool-group">
+      <div class="slider-group">
+        <label>Opacity</label>
+        <input type="range" id="opacitySlider" min="5" max="100" value="100" />
+        <span class="slider-value" id="opacityValue">100%</span>
+      </div>
+    </div>
+
+    <div class="tool-group">
+      <button class="toggle-btn" id="fillBtn" title="Isi shape">Fill</button>
+    </div>
+
+    <div class="tool-group">
+      <button class="action-btn btn-ghost" id="undoBtn" title="Undo (Ctrl+Z)">↩</button>
+      <button class="action-btn btn-ghost" id="redoBtn" title="Redo (Ctrl+Y)">↪</button>
+      <button class="action-btn btn-ghost" id="uploadBtn" title="Upload Gambar">📷</button>
+      <button class="action-btn btn-danger" id="clearBtn" title="Hapus Semua">🗑️</button>
+      <button class="action-btn btn-success" id="downloadBtn" title="Unduh PNG">⬇️</button>
+    </div>
+  </div>
+
+  <div class="canvas-area" id="canvasArea">
+    <div class="canvas-frame">
+      <canvas id="drawCanvas"></canvas>
+    </div>
+    <input type="text" class="text-input-box" id="textInputBox" placeholder="Ketik teks lalu Enter..." />
+  </div>
+
+  <div class="statusbar">
+    <span id="status">Siap menggambar</span>
+    <span class="hint">Auto-save aktif • Ctrl+Z Undo • Ctrl+Y Redo</span>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" />
+
+  <script>
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const canvasArea = document.getElementById('canvasArea');
+    const textInputBox = document.getElementById('textInputBox');
+    const fileInput = document.getElementById('fileInput');
+
+    const brushBtn = document.getElementById('brushBtn');
+    const eraserBtn = document.getElementById('eraserBtn');
+    const lineBtn = document.getElementById('lineBtn');
+    const rectBtn = document.getElementById('rectBtn');
+    const circleBtn = document.getElementById('circleBtn');
+    const textBtn = document.getElementById('textBtn');
+    const eyedropperBtn = document.getElementById('eyedropperBtn');
+    const colorPicker = document.getElementById('colorPicker');
+    const bgPicker = document.getElementById('bgPicker');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const sizeValue = document.getElementById('sizeValue');
+    const opacitySlider = document.getElementById('opacitySlider');
+    const opacityValue = document.getElementById('opacityValue');
+    const fillBtn = document.getElementById('fillBtn');
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const themeBtn = document.getElementById('themeBtn');
+    const statusEl = document.getElementById('status');
+
+    let isDrawing = false;
+    let currentTool = 'brush';
+    let fillMode = false;
+    let startX = 0, startY = 0;
+    let lastX = 0, lastY = 0;
+    let history = [];
+    let redoStack = [];
+    const MAX_HISTORY = 40;
+    let snapshot = null;
+    let textPos = null;
+    let autoSaveTimer = null;
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('aura-theme', theme);
+    }
+    themeBtn.addEventListener('click', () => {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      setTheme(cur === 'dark' ? 'light' : 'dark');
+    });
+    setTheme(localStorage.getItem('aura-theme') || 'dark');
+
+    function getSize() {
+      const rect = canvasArea.getBoundingClientRect();
+      const pad = 40;
+      return {
+        w: Math.max(300, rect.width - pad),
+        h: Math.max(300, rect.height - pad)
+      };
+    }
+
+    function resizeCanvas(keep = false) {
+      const { w, h } = getSize();
+      const dpr = window.devicePixelRatio || 1;
+      let oldUrl = null;
+      if (keep && canvas.width > 0) oldUrl = canvas.toDataURL();
+
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+
+      ctx.fillStyle = bgPicker.value;
+      ctx.fillRect(0, 0, w, h);
+
+      if (oldUrl) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, w, h);
+          pushHistory(false);
+        };
+        img.src = oldUrl;
+      } else {
+        pushHistory(false);
+      }
+    }
+
+    function pushHistory(clearRedo = true) {
+      if (history.length >= MAX_HISTORY) history.shift();
+      history.push(canvas.toDataURL());
+      if (clearRedo) redoStack = [];
+      scheduleAutoSave();
+    }
+
+    function restore(url) {
+      const { w, h } = getSize();
+      const img = new Image();
+      img.onload = () => {
+        ctx.clearRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+      };
+      img.src = url;
+    }
+
+    function undo() {
+      if (history.length <= 1) {
+        setStatus('Tidak ada yang bisa di-undo');
+        return;
+      }
+      redoStack.push(history.pop());
+      restore(history[history.length - 1]);
+      setStatus('Undo');
+      scheduleAutoSave();
+    }
+
+    function redo() {
+      if (redoStack.length === 0) {
+        setStatus('Tidak ada yang bisa di-redo');
+        return;
+      }
+      const url = redoStack.pop();
+      history.push(url);
+      restore(url);
+      setStatus('Redo');
+      scheduleAutoSave();
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        try {
+          localStorage.setItem('aura-draw-save', canvas.toDataURL());
+          localStorage.setItem('aura-draw-bg', bgPicker.value);
+        } catch (e) {}
+      }, 800);
+    }
+
+    function loadAutoSave() {
+      const saved = localStorage.getItem('aura-draw-save');
+      const savedBg = localStorage.getItem('aura-draw-bg');
+      if (savedBg) bgPicker.value = savedBg;
+      if (saved) {
+        const { w, h } = getSize();
+        const img = new Image();
+        img.onload = () => {
+          ctx.fillStyle = bgPicker.value;
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          history = [canvas.toDataURL()];
+          setStatus('Progress sebelumnya dimuat');
+        };
+        img.src = saved;
+        return true;
+      }
+      return false;
+    }
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function getRGBA() {
+      const hex = colorPicker.value;
+      const a = opacitySlider.value / 100;
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    function setActiveTool(tool) {
+      currentTool = tool;
+      [brushBtn, eraserBtn, lineBtn, rectBtn, circleBtn, textBtn, eyedropperBtn]
+        .forEach(b => b.classList.remove('active'));
+      const map = { brush: brushBtn, eraser: eraserBtn, line: lineBtn, rect: rectBtn, circle: circleBtn, text: textBtn, eyedropper: eyedropperBtn };
+      map[tool]?.classList.add('active');
+
+      const labels = {
+        brush: 'Mode: Kuas',
+        eraser: 'Mode: Penghapus',
+        line: 'Mode: Garis',
+        rect: 'Mode: Kotak' + (fillMode ? ' (Fill)' : ''),
+        circle: 'Mode: Lingkaran' + (fillMode ? ' (Fill)' : ''),
+        text: 'Mode: Teks — klik di canvas',
+        eyedropper: 'Mode: Eyedropper — klik untuk ambil warna'
+      };
+      setStatus(labels[tool] || '');
+      canvas.style.cursor = tool === 'eraser' ? 'cell' : tool === 'eyedropper' ? 'crosshair' : tool === 'text' ? 'text' : 'crosshair';
+      hideTextInput();
+    }
+
+    function showTextInput(x, y) {
+      textPos = { x, y };
+      const rect = canvas.getBoundingClientRect();
+      const areaRect = canvasArea.getBoundingClientRect();
+      textInputBox.style.display = 'block';
+      textInputBox.style.left = (rect.left - areaRect.left + x) + 'px';
+      textInputBox.style.top = (rect.top - areaRect.top + y - 10) + 'px';
+      textInputBox.value = '';
+      textInputBox.focus();
+    }
+
+    function hideTextInput() {
+      textInputBox.style.display = 'none';
+      textPos = null;
+    }
+
+    function commitText() {
+      if (!textPos || !textInputBox.value.trim()) {
+        hideTextInput();
+        return;
+      }
+      const text = textInputBox.value.trim();
+      ctx.font = `${Math.max(12, sizeSlider.value * 2.2)}px Outfit, sans-serif`;
+      ctx.fillStyle = getRGBA();
+      ctx.textBaseline = 'top';
+      ctx.fillText(text, textPos.x, textPos.y);
+      hideTextInput();
+      pushHistory();
+      setStatus('Teks ditambahkan');
+    }
+
+    textInputBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        commitText();
+      } else if (e.key === 'Escape') {
+        hideTextInput();
+      }
+    });
+
+    textInputBox.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (textInputBox.style.display === 'block') commitText();
+      }, 150);
+    });
+
+    function startDrawing(e) {
+      e.preventDefault();
+      const pos = getPos(e);
+
+      if (currentTool === 'eyedropper') {
+        const dpr = window.devicePixelRatio || 1;
+        const pixel = ctx.getImageData(pos.x * dpr, pos.y * dpr, 1, 1).data;
+        const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(v => v.toString(16).padStart(2, '0')).join('');
+        colorPicker.value = hex;
+        setStatus('Warna diambil: ' + hex);
+        setActiveTool('brush');
+        return;
+      }
+
+      if (currentTool === 'text') {
+        showTextInput(pos.x, pos.y);
+        return;
+      }
+
+      isDrawing = true;
+      startX = lastX = pos.x;
+      startY = lastY = pos.y;
+
+      if (currentTool === 'brush' || currentTool === 'eraser') {
+        ctx.beginPath();
+        ctx.arc(startX, startY, sizeSlider.value / 2, 0, Math.PI * 2);
+        ctx.fillStyle = currentTool === 'eraser' ? bgPicker.value : getRGBA();
+        ctx.fill();
+      } else {
+        snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      }
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPos(e);
+
+      if (currentTool === 'brush' || currentTool === 'eraser') {
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.strokeStyle = currentTool === 'eraser' ? bgPicker.value : getRGBA();
+        ctx.lineWidth = sizeSlider.value;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.globalAlpha = currentTool === 'eraser' ? 1 : opacitySlider.value / 100;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        lastX = pos.x;
+        lastY = pos.y;
+      } else if (['line', 'rect', 'circle'].includes(currentTool)) {
+        if (snapshot) ctx.putImageData(snapshot, 0, 0);
+        drawShape(startX, startY, pos.x, pos.y);
+      }
+    }
+
+    function stopDrawing(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+
+      if (['line', 'rect', 'circle'].includes(currentTool)) {
+        const pos = e ? getPos(e) : { x: lastX, y: lastY };
+        if (snapshot) ctx.putImageData(snapshot, 0, 0);
+        drawShape(startX, startY, pos.x, pos.y);
+        snapshot = null;
+      }
+      pushHistory();
+      setStatus('Siap menggambar');
+    }
+
+    function drawShape(x1, y1, x2, y2) {
+      ctx.beginPath();
+      ctx.strokeStyle = getRGBA();
+      ctx.fillStyle = getRGBA();
+      ctx.lineWidth = sizeSlider.value;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalAlpha = opacitySlider.value / 100;
+
+      if (currentTool === 'line') {
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+      } else if (currentTool === 'rect') {
+        const w = x2 - x1;
+        const h = y2 - y1;
+        if (fillMode) ctx.fillRect(x1, y1, w, h);
+        else ctx.strokeRect(x1, y1, w, h);
+      } else if (currentTool === 'circle') {
+        const radius = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        ctx.arc(x1, y1, radius, 0, Math.PI * 2);
+        if (fillMode) ctx.fill();
+        else ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+    canvas.addEventListener('touchcancel', stopDrawing);
+
+    brushBtn.addEventListener('click', () => setActiveTool('brush'));
+    eraserBtn.addEventListener('click', () => setActiveTool('eraser'));
+    lineBtn.addEventListener('click', () => setActiveTool('line'));
+    rectBtn.addEventListener('click', () => setActiveTool('rect'));
+    circleBtn.addEventListener('click', () => setActiveTool('circle'));
+    textBtn.addEventListener('click', () => setActiveTool('text'));
+    eyedropperBtn.addEventListener('click', () => setActiveTool('eyedropper'));
+
+    fillBtn.addEventListener('click', () => {
+      fillMode = !fillMode;
+      fillBtn.classList.toggle('active', fillMode);
+      setStatus(fillMode ? 'Fill aktif' : 'Fill nonaktif');
+    });
+
+    sizeSlider.addEventListener('input', () => sizeValue.textContent = sizeSlider.value);
+    opacitySlider.addEventListener('input', () => opacityValue.textContent = opacitySlider.value + '%');
+
+    bgPicker.addEventListener('change', () => {
+      setStatus('Background diubah (berlaku saat clear / eraser)');
+      scheduleAutoSave();
+    });
+
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+
+    clearBtn.addEventListener('click', () => {
+      if (!confirm('Hapus semua gambar?')) return;
+      const { w, h } = getSize();
+      ctx.fillStyle = bgPicker.value;
+      ctx.fillRect(0, 0, w, h);
+      history = [];
+      redoStack = [];
+      pushHistory();
+      setStatus('Canvas dikosongkan');
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.download = 'aura-draw-' + Date.now() + '.png';
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+      setStatus('Gambar diunduh');
+    });
+
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const { w, h } = getSize();
+          const scale = Math.min(w / img.width, h / img.height, 1);
+          const dw = img.width * scale;
+          const dh = img.height * scale;
+          const dx = (w - dw) / 2;
+          const dy = (h - dh) / 2;
+          ctx.drawImage(img, dx, dy, dw, dh);
+          pushHistory();
+          setStatus('Gambar diunggah');
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = '';
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.target === textInputBox) return;
+      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
+      if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+      if (e.key === 'b' || e.key === 'B') setActiveTool('brush');
+      if (e.key === 'e' || e.key === 'E') setActiveTool('eraser');
+      if (e.key === 'l' || e.key === 'L') setActiveTool('line');
+      if (e.key === 'r' || e.key === 'R') setActiveTool('rect');
+      if (e.key === 'c' || e.key === 'C') setActiveTool('circle');
+      if (e.key === 't' || e.key === 'T') setActiveTool('text');
+      if (e.key === 'i' || e.key === 'I') setActiveTool('eyedropper');
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => resizeCanvas(true), 180);
+    });
+
+    resizeCanvas(false);
+    setTimeout(() => {
+      if (!loadAutoSave()) {
+        setStatus('Siap menggambar');
+      }
+    }, 50);
+  </script>
+</body>
+</html>
